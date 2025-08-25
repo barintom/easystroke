@@ -141,3 +141,10 @@ RStroke Stroke::trefoil() {
 	}
 	return Stroke::create(s, 0, 0, AnyModifier, false);
 }
+
+// Explicit template instantiations for Boost serialization
+#include <boost/archive/text_oarchive.hpp>
+#include <boost/archive/text_iarchive.hpp>
+
+template void Stroke::save<boost::archive::text_oarchive>(boost::archive::text_oarchive& ar, const unsigned int version) const;
+template void Stroke::load<boost::archive::text_iarchive>(boost::archive::text_iarchive& ar, const unsigned int version);

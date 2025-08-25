@@ -67,7 +67,7 @@ public:
 		template<class Archive> void serialize(Archive & ar, const unsigned int version) {
 			ar & x; ar & y;
 			if (version == 0) {
-				double time;
+				double time = 0.0;  // Initialize to avoid compiler warning
 				ar & time;
 			}
 		}
