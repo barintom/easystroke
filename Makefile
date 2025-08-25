@@ -22,13 +22,18 @@ DFLAGS   =
 OFLAGS   = -O2
 AOFLAGS  = -O3
 STROKEFLAGS  = -Wall -std=c11 $(DFLAGS)
+# Minimum version requirements for modern build
+GTK_MIN_VERSION = 3.20
+GTKMM_MIN_VERSION = 3.20
+BOOST_MIN_VERSION = 1.65
+
 CXXSTD = -std=c++17
-INCLUDES = $(shell pkg-config gtkmm-3.0 dbus-glib-1 --cflags)
+INCLUDES = $(shell pkg-config --atleast-version=$(GTKMM_MIN_VERSION) gtkmm-3.0 && pkg-config gtkmm-3.0 dbus-glib-1 --cflags)
 CXXFLAGS = $(CXXSTD) -Wall $(DFLAGS) -DLOCALEDIR=\"$(LOCALEDIR)\" $(INCLUDES)
 CFLAGS   = -std=c11 -Wall $(DFLAGS) -DLOCALEDIR=\"$(LOCALEDIR)\" $(INCLUDES) -DGETTEXT_PACKAGE='"easystroke"'
 LDFLAGS  = $(DFLAGS)
 
-LIBS     = $(DFLAGS) -lboost_serialization -lX11 -lXext -lXi -lXfixes -lXtst `pkg-config gtkmm-3.0 dbus-glib-1 --libs`
+LIBS     = $(DFLAGS) -lboost_serialization -lX11 -lXext -lXi -lXfixes -lXtst $(shell pkg-config --atleast-version=$(GTKMM_MIN_VERSION) gtkmm-3.0 && pkg-config gtkmm-3.0 dbus-glib-1 --libs)
 
 BINARY   = easystroke
 ICON     = easystroke.svg

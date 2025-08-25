@@ -173,14 +173,14 @@ Win::Win() : actions(new Actions), prefs_tab(new Prefs), stats(new Stats) {
 	menu.append(menu_disabled);
 	new MenuCheck(disabled, &menu_disabled);
 
-	WIDGET(Gtk::ImageMenuItem, menu_about, Gtk::Stock::ABOUT);
+	WIDGET(Gtk::MenuItem, menu_about, _("_About"), true);
 	menu.append(menu_about);
 	menu_about.signal_activate().connect(sigc::mem_fun(*this, &Win::show_about));
 
 	WIDGET(Gtk::SeparatorMenuItem, menu_sep);
 	menu.append(menu_sep);
 
-	WIDGET(Gtk::ImageMenuItem, menu_quit, Gtk::Stock::QUIT);
+	WIDGET(Gtk::MenuItem, menu_quit, _("_Quit"), true);
 	menu.append(menu_quit);
 	menu_quit.signal_activate().connect(sigc::ptr_fun(&quit));
 
@@ -188,10 +188,9 @@ Win::Win() : actions(new Actions), prefs_tab(new Prefs), stats(new Stats) {
 
 	widgets->get_widget("main", win);
 	RStroke trefoil = Stroke::trefoil();
-	std::vector<Glib::RefPtr<Gdk::Pixbuf> > icons;
-	icons.push_back(trefoil->draw(24));
-	icons.push_back(trefoil->draw(64));
-	win->set_icon_list(icons);
+	// Use the larger icon as the window icon
+	auto icon = trefoil->draw(64);
+	win->set_icon(icon);
 
 	Gtk::Button* button_hide[4];
 	widgets->get_widget("button_hide1", button_hide[0]);
