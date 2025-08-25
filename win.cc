@@ -173,14 +173,14 @@ Win::Win() : actions(new Actions), prefs_tab(new Prefs), stats(new Stats) {
 	menu.append(menu_disabled);
 	new MenuCheck(disabled, &menu_disabled);
 
-	WIDGET(Gtk::ImageMenuItem, menu_about, Gtk::Stock::ABOUT);
+	WIDGET(Gtk::ImageMenuItem, menu_about, "help-about");
 	menu.append(menu_about);
 	menu_about.signal_activate().connect(sigc::mem_fun(*this, &Win::show_about));
 
 	WIDGET(Gtk::SeparatorMenuItem, menu_sep);
 	menu.append(menu_sep);
 
-	WIDGET(Gtk::ImageMenuItem, menu_quit, Gtk::Stock::QUIT);
+	WIDGET(Gtk::ImageMenuItem, menu_quit, "application-exit");
 	menu.append(menu_quit);
 	menu_quit.signal_activate().connect(sigc::ptr_fun(&quit));
 

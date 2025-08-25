@@ -19,6 +19,7 @@
 #include "win.h" // Why?
 #include "prefs.h" // Why?
 #include <gtkmm.h>
+#include <cmath>
 #include <X11/Xutil.h>
 #include <X11/extensions/XTest.h>
 #include <X11/XKBlib.h>
@@ -533,7 +534,6 @@ public:
 	virtual Grabber::State grab_mode() { return parent->grab_mode(); }
 };
 
-static inline float abs(float x) { return x > 0 ? x : -x; }
 
 class AbstractScrollHandler : public Handler {
 	bool have_x, have_y;
@@ -559,7 +559,7 @@ protected:
 			xstate->fake_click(b2);
 	}
 	static float curve(float v) {
-		return v * exp(log(abs(v))/3);
+		return v * exp(log(std::abs(v))/3);
 	}
 protected:
 	void move_back() {
@@ -597,8 +597,8 @@ public:
 		offset_x += factor * curve(dx/dt)*dt/20.0;
 		offset_y += factor * curve(dy/dt)*dt/10.0;
 		int b1 = 0, n1 = 0, b2 = 0, n2 = 0;
-		if (abs(offset_x) > 1.0) {
-			n1 = (int)floor(abs(offset_x));
+		if (std::abs(offset_x) > 1.0) {
+			n1 = (int)floor(std::abs(offset_x));
 			if (offset_x > 0) {
 				b1 = 7;
 				offset_x -= n1;
@@ -607,10 +607,10 @@ public:
 				offset_x += n1;
 			}
 		}
-		if (abs(offset_y) > 1.0) {
-			if (abs(offset_y) < 1.0)
+		if (std::abs(offset_y) > 1.0) {
+			if (std::abs(offset_y) < 1.0)
 				return;
-			n2 = (int)floor(abs(offset_y));
+			n2 = (int)floor(std::abs(offset_y));
 			if (offset_y > 0) {
 				b2 = 5;
 				offset_y -= n2;
