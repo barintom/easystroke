@@ -170,11 +170,14 @@ print_status 0 "Build directory cleaned"
 
 # Build the project
 print_info "Compiling easystroke..."
-if make -j$(nproc) 2>&1 | tee build.log; then
+make -j$(nproc) 2>&1 | tee build.log
+MAKE_EXIT_CODE=${PIPESTATUS[0]}
+
+if [ $MAKE_EXIT_CODE -eq 0 ]; then
     print_status 0 "Build completed successfully"
 else
-    print_status 1 "Build failed"
-    echo "Build log:"
+    print_status 1 "Build failed (exit code: $MAKE_EXIT_CODE)"
+    echo "Build log (last 20 lines):"
     tail -20 build.log
 fi
 
