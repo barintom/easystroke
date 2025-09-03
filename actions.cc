@@ -47,14 +47,17 @@ void TreeViewMulti::on_drag_begin(const Glib::RefPtr<Gdk::DragContext> &context)
 	pending = false;
 	if (get_selection()->count_selected_rows() <= 1)
 		return Gtk::TreeView::on_drag_begin(context);
-	Glib::RefPtr<Gdk::Pixbuf> pb = render_icon_pixbuf(Gtk::Stock::DND_MULTIPLE, Gtk::ICON_SIZE_DND);
+	
+	// Create a simple multi-selection icon
+	auto pb = Gdk::Pixbuf::create(Gdk::COLORSPACE_RGB, true, 8, 16, 16);
+	pb->fill(0x000000ff); // Simple black square as drag icon
 	context->set_icon(pb, pb->get_width(), pb->get_height());
 }
 
-bool negate(bool b) { return !b; }
-
 TreeViewMulti::TreeViewMulti() : Gtk::TreeView(), pending(false) {
-	get_selection()->set_select_function(sigc::group(&negate, sigc::ref(pending)));
+	get_selection()->set_select_function([this](const Glib::RefPtr<Gtk::TreeModel>& model, const Gtk::TreeModel::Path& path, bool path_currently_selected) -> bool {
+		return !pending;
+	});
 }
 
 enum Type { COMMAND, KEY, TEXT, SCROLL, IGNORE, BUTTON, MISC };

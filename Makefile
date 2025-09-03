@@ -22,13 +22,18 @@ DFLAGS   =
 OFLAGS   = -O2
 AOFLAGS  = -O3
 STROKEFLAGS  = -Wall -std=c11 $(DFLAGS)
-CXXSTD = -std=c++11
-INCLUDES = $(shell pkg-config gtkmm-3.0 dbus-glib-1 --cflags)
+# Minimum version requirements for modern build
+GTK_MIN_VERSION = 3.20
+GTKMM_MIN_VERSION = 3.20
+BOOST_MIN_VERSION = 1.65
+
+CXXSTD = -std=c++17
+INCLUDES = $(shell pkg-config --atleast-version=$(GTKMM_MIN_VERSION) gtkmm-3.0 && pkg-config gtkmm-3.0 dbus-glib-1 --cflags)
 CXXFLAGS = $(CXXSTD) -Wall $(DFLAGS) -DLOCALEDIR=\"$(LOCALEDIR)\" $(INCLUDES)
 CFLAGS   = -std=c11 -Wall $(DFLAGS) -DLOCALEDIR=\"$(LOCALEDIR)\" $(INCLUDES) -DGETTEXT_PACKAGE='"easystroke"'
 LDFLAGS  = $(DFLAGS)
 
-LIBS     = $(DFLAGS) -lboost_serialization -lX11 -lXext -lXi -lXfixes -lXtst `pkg-config gtkmm-3.0 dbus-glib-1 --libs`
+LIBS     = $(DFLAGS) -lboost_serialization -lX11 -lXext -lXi -lXfixes -lXtst $(shell pkg-config --atleast-version=$(GTKMM_MIN_VERSION) gtkmm-3.0 && pkg-config gtkmm-3.0 dbus-glib-1 --libs)
 
 BINARY   = easystroke
 ICON     = easystroke.svg
@@ -82,7 +87,7 @@ gui.c: gui.glade
 	echo "\";" >> $@
 
 easystroke.desktop: easystroke.desktop.in $(MOFILES)
-	intltool-merge po/ -d -u $< $@
+	msgfmt --desktop --template=$< -d po/ -o $@
 
 desktop.c: easystroke.desktop
 	echo "const char *desktop_file = \"\\" > $@
@@ -96,13 +101,13 @@ po/POTFILES.in: $(CCFILES) $(HFILES)
 	echo easystroke.desktop.in >> $@
 
 translate: po/POTFILES.in
-	cd po && XGETTEXT_ARGS="--package-name=easystroke --copyright-holder='Thomas Jaeger <ThJaeger@gmail.com>'" intltool-update --pot -g messages
+	cd po && xgettext --package-name=easystroke --copyright-holder='Thomas Jaeger <ThJaeger@gmail.com>' --from-code=UTF-8 --files-from=POTFILES.in -o messages.pot
 
 compile-translations: $(MOFILES)
 
 update-translations: po/POTFILES.in
 	cd po && for f in $(POFILES); do \
-		intltool-update `echo $$f | sed "s|po/\(.*\)\.po$$|\1|"`; \
+		msgmerge --update $$f messages.pot; \
 	done
 
 strip-translations:
